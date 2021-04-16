@@ -31,8 +31,6 @@ class NeuralNetwork():
             self.parameters['Weight' + str(l)] = np.random.randn(self.layer_info[l], self.layer_info[l-1])*0.01
             self.parameters['Bias' + str(l)] = np.zeros((self.layer_info[l], 1))
 
-        return self.parameters
-
 
     # Forward Propagation
     def calculate_Z(self, A, W, b):
@@ -42,7 +40,7 @@ class NeuralNetwork():
         > W: weight matrix of the current layer
         > b: bias vector of the current layer
         '''
-        print(A.shape, W.shape, b.shape)
+        # print(A.shape, W.shape, b.shape)
         Z = W @ A + b
         # print(Z.shape)
         cache = (A,W,b)
@@ -55,7 +53,7 @@ class NeuralNetwork():
         Function to calculate the sigmoid of Z
         '''
         g_z = 1/(1 + np.exp(-Z))
-        # print("g(z) shape:", g_z.shape)
+        # print("Z shape:", Z.shape)
         return g_z, Z
     
     def relu(self,Z):
@@ -94,16 +92,17 @@ class NeuralNetwork():
         A = self.X
         
         for l in range(1, self.num_layers-1):
-            print("Layer:", l)
+            # print("Layer:", l)
             A_prev = A
             A, cache = self.activate_Z(A_prev, self.parameters['Weight' + str(l)], self.parameters['Bias' + str(l)], activation=self.activations[l])
-            # print(A)
+            # print("cache1 shape:",cache[1].shape)
             caches.append(cache)
-            break
+            
 
         AL, cache = self.activate_Z(A, self.parameters['Weight' + str(self.num_layers-1)], self.parameters['Bias' + str(self.num_layers-1)], activation=self.activations[self.num_layers-1])
         # print(AL)
         caches.append(cache)
+        # print("cache1 shape:",cache[1].shape)
         # assert AL shape
 
         return AL, caches
@@ -122,7 +121,7 @@ class NeuralNetwork():
 
         dW = 1 / n * dZ @ A_prev.T
         db = 1 / n * np.sum(dZ, axis=1, keepdims=True)
-        dA_prev = W.T @ dZ
+        dA_prev = np.dot(W.T,dZ)
 
         return dA_prev, dW, db
 
@@ -137,10 +136,11 @@ class NeuralNetwork():
         '''
 
         Z = cache
-        g_z, _ = self.sigmoid(Z)
+        g_z = 1/(1+np.exp(-Z))
 
         dZ = dA*g_z*(1-g_z)
-
+        # print(Z.shape, dA.shape)
+        assert(dZ.shape == Z.shape)
         return dZ
 
 
@@ -152,7 +152,7 @@ class NeuralNetwork():
         > activation
         '''
         l_cache, a_cache = cache
-
+        # print(a_cache.shape)
         if activation == 'relu':
             dZ = self.backward_relu(dA, a_cache)
             dA_prev, dW, db = self.backward_linear(dZ, l_cache)
@@ -172,18 +172,20 @@ class NeuralNetwork():
         '''
 
         gradients = {}
-        
+        L = len(caches)        
         y = y.reshape(AL.shape)
 
         dAL = -(np.divide(y,AL)-np.divide(1-y, 1-AL))
 
-        curr_cache = caches[self.num_layers-1]
+        curr_cache = caches[L-1]
 
-        gradients['dA' + str(self.num_layers-1)], gradients['dW'+str(self.num_layers-1)], gradients['db' + str(self.num_layers-1)] = self.backward_activation(dAL, curr_cache, self.activations[self.num_layers-1])
-
-        for l in range(self.num_layers-2, 0, -1):
+        gradients['dA' + str(L-1)], gradients['dW'+str(L)], gradients['db' + str(L)] = self.backward_activation(dAL, curr_cache, self.activations[L])
+        # print(caches[-1])
+        for l in reversed(range(L-1)):
+            # print("l:", l)
             curr_cache = caches[l]
-            dA_prev, dW, db = self.backward_activation(gradients['dA' + str(l+1), curr_cache, self.activations[l]])
+            
+            dA_prev, dW, db = self.backward_activation(gradients['dA' + str(l+1)], curr_cache, self.activations[l])
             gradients['dA' + str(l)] = dA_prev
             gradients['dW' + str(l+1)] = dW
             gradients['db' + str(l+1)] = db
@@ -210,3 +212,59 @@ class NeuralNetwork():
         > y_hat:
         > y: 
         '''
+
+        n = y.shape[1]
+
+        loss = -1/n*(np.sum(y*np.log(y_hat) + (1-y)*np.log(1-y_hat)))
+        loss = np.squeeze(loss)
+
+        return loss
+
+    def train_model(self, learning_rate = 0.001, num_iter=2500, verbose=False, plot_loss=True):
+        '''
+        Function to train model
+        > learning_rate: learning rate for gradient descent
+        > num_iter: number of iterations
+        > verbose: Print loss or not
+        '''
+
+        loss_list = []
+        self.initialize_parameters()
+        for i in range(num_iter):
+            # forward propagation
+            y_hat, caches = self.forward_prop()
+            # print(len(caches))
+            # compute loss
+            loss = self.cross_entropy_loss(y_hat, self.y)
+            # print(loss)
+            # backward propagation
+            gradients = self.backward_prop(y_hat, self.y, caches)
+
+            # update parameters
+            self.parameters_update(gradients, learning_rate)
+
+            if i%10 == 0:
+                loss_list.append(loss)
+            
+            if verbose:
+                if i % 100 == 0:
+                    print("> loss after iteration {}: {}".format(i, loss))
+
+        # plot loss
+        if plot_loss:
+            self.plot_loss(loss_list, learning_rate)
+
+
+    def plot_loss(self,loss_list, learning_rate):
+        '''
+        Function to plot loss
+        > loss_list: list containing losses at every 10 iterations
+        > learning_rate: the learning rate for GD
+        '''
+
+        plt.plot(np.squeeze(loss_list))
+        plt.grid()
+        plt.xlabel("Number of iterations")
+        plt.ylabel("Loss")
+        plt.title("Loss vs Number of iterations\nLearning Rate: {}".format(learning_rate))
+        plt.show()
