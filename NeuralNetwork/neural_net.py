@@ -4,10 +4,10 @@ import autograd.numpy as np
 from autograd import grad
 import pandas as pd
 import matplotlib.pyplot as plt
-from utils import *
+from NeuralNetwork.utils import *
 from sklearn.preprocessing import OneHotEncoder
 import copy
-from optimizer import param_update
+from NeuralNetwork.optimizer import param_update
 
 
 
@@ -56,8 +56,9 @@ class NeuralNetwork():
         return np.maximum(zero,Z)
 
     def softmax(self, Z):
-        return np.exp(Z)/np.sum(np.exp(Z), axis=0)
-
+        return np.exp(Z)/np.sum(np.exp(Z), axis=1,keepdims=True)
+        # expZ = np.exp(Z - np.max(Z))
+        # return expZ / expZ.sum(axis=1, keepdims=True)
 
     def forward_prop(self, X, params):
         '''
@@ -78,10 +79,12 @@ class NeuralNetwork():
                 A = self.relu(Z)
             layer_num += 1
         
-        if self.activations[self.num_layers-1] == 'sigmoid':
+        if self.activations[-1] == 'sigmoid':
             y_hat = self.sigmoid(Z)
-        elif self.activations[self.num_layers-1] == 'relu':
+        elif self.activations[-1] == 'relu':
             y_hat = self.relu(Z)
+        elif self.activations[-1] == 'softmax':
+            y_hat = self.softmax(Z)
 
         return y_hat
 
@@ -96,9 +99,12 @@ class NeuralNetwork():
         n = self.y.shape[1]
         
         y_hat = self.forward_prop(self.X, params)
-        # print(y_hat.shape)
-        loss = -1/n*(np.sum(self.y*np.log(y_hat) + (1-self.y)*np.log(1-y_hat)))
-        # loss = np.squeeze(loss)
+        # print(self.y.shape)
+        if self.activations[-1] == 'softmax':
+            loss = np.mean(-np.sum(np.log(y_hat) * self.y))
+        else:
+            loss = -1/n*(np.sum(self.y*np.log(y_hat) + (1-self.y)*np.log(1-y_hat)))
+        
         
         if self.verbose:
             if iter % 100 == 0:
@@ -140,20 +146,32 @@ class NeuralNetwork():
         '''
         Function to predict 
         '''
-        AL, _ = self.forward_prop(X)
+        AL = self.forward_prop(X, self.final_params)
+        # print(AL[:,2],AL[:,4])
+        if self.activations[-1] == 'softmax':
+            y_hat = AL.argmax(axis=0)
+            y = np.argmax(y, axis=0)
 
-        y_hat = np.zeros((1, X.shape[1]))
+            acc = (y_hat == y).mean()
+            # print(y_hat.shape, y.shape)
+            print(y_hat)
+            # y_hat = y_hat.reshape((1, len(y_hat)))
+            # # print(y)
+        
+        else:
+            y_hat = np.zeros((1, X.shape[1]))
+            for i in range(AL.shape[1]):
+                if AL[0,i] > 0.5:
+                    y_hat[0,i] = 1
+                else:
+                    y_hat[0,i] = 0
 
-        for i in range(AL.shape[1]):
-            if AL[0,i] > 0.5:
-                y_hat[0,i] = 1
-            else:
-                y_hat[0,i] = 0
+            acc = accuracy(y_hat, y)
 
         if y is None:
             return y_hat
         
-        acc = accuracy(y_hat, y)
+       
 
         print("Test Accuracy:", acc)
 
@@ -172,3 +190,16 @@ class NeuralNetwork():
         plt.ylabel("Loss")
         plt.title("Loss vs Number of iterations\nLearning Rate: {}".format(learning_rate))
         plt.show()
+
+    def _get_one_hot_encoding(self, y):
+        k = self.layer_info[-1]
+        
+        y_enc = np.zeros((self.X.shape[1], k))
+        k = np.arange(0, k, 1)
+
+        for cls in k.astype(int):
+            y_enc[np.where(y[:] == cls), cls] = 1
+
+
+        return y_enc.T
+        
