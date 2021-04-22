@@ -1,9 +1,10 @@
 # Importing Libraries
-import numpy as np
+import autograd.numpy as np
 import matplotlib.pyplot as plt
-from jax import grad
+from autograd import grad
 # import jax.np as jnp
 from LogisticRegresssion.utils import *
+from LogisticRegresssion.optimizer import param_update
 
 
 class LogisticRegressor():
@@ -181,6 +182,111 @@ class LogisticRegressor():
         plt.ylabel("Loss")
         plt.title("Loss vs Number of iterations\nLearning Rate: {}".format(learning_rate))
         plt.show()
+
+
+class MultiClassRegressor():
+    def __init__(self):
+        # self.theta = None
+        self.loss_list = []
+
+    def initialize_theta(self):
+        '''
+        Function to initialize weight matrix
+        '''
+        theta = np.zeros((self.y.shape[0], self.X.shape[0]))
+        return theta
+    
+    def softmax(self,Z):
+        '''
+        Function to implement softmax(Z)
+        '''
+        return np.exp(Z)/np.sum(np.exp(Z), axis=1,keepdims=True)
+
+    def get_y_hat(self, X, theta):
+        Z = np.dot(X,theta)
+        y_hat = self.softmax(Z)
+
+        return y_hat
+
+    def loss_func(self, theta, iter, y_hat):
+        '''
+        Function to compute loss
+        '''
+        loss = np.mean(-np.sum(np.log(y_hat) * self.y))
+        
+        if self.verbose:
+            if iter%10 == 0:
+                print("> Loss after iteration {}: {}".format(iter, loss))
+                self.loss_list.append(loss)
+
+        return loss
+
+    def fit(self, X, y, num_iter=1000, learning_rate=0.001, verbose=False, plot_loss=True):
+        '''
+        Function to fit training data to the MultiClassRegressor Model
+        '''
+        self.X = X
+        
+        self.y = y
+        self.verbose = verbose 
+        self.X = np.vstack([np.ones((1,X.shape[1])), self.X])
+        # print(self.X)
+        theta = self.initialize_theta()
+        
+        print(X.shape, theta.shape)
+        # print(theta.shape)
+
+        # training_grad_func = grad(self.loss_func)
+
+        # theta = param_update(training_grad_func, theta)
+        # for i in range(num_iter):
+        #     der = training_grad_func(theta, i)
+        #     theta -= theta * learning_rate
+
+        for i in range(num_iter):
+            y_hat = self.softmax((np.dot(theta, self.X)))
+            
+            loss = self.loss_func(theta, i, y_hat)
+            
+            der = (1/self.X.shape[1]) * np.dot((y_hat - self.y), self.X.T)
+            
+            theta = theta - learning_rate * der
+
+        print(y_hat.shape)
+        # print(self.loss_func(theta))
+        self.trained_theta = theta
+        # print(theta)
+
+        if plot_loss:
+            self.plot_loss(learning_rate)
+
+
+    def predict(self, X=None, y=None):
+        '''
+        Function to make predictions
+        '''
+        X = np.vstack([np.ones((1,X.shape[1])), X])
+        AL = self.softmax((np.dot(self.trained_theta, X)))
+        
+        y_hat = AL.argmax(axis=0)
+        y = np.argmax(y, axis=0)
+
+        acc = (y_hat == y).mean()
+        print("Accuracy:", acc)
+        # print(y_hat.shape, y.shape)
+        # print(y_hat)
+        
+    
+    def plot_loss(self, learning_rate):
+        plt.plot(np.squeeze(self.loss_list))
+        plt.grid()
+        plt.xlabel("Number of iterations")
+        plt.ylabel("Loss")
+        plt.title("Loss vs Number of iterations\nLearning Rate: {}".format(learning_rate))
+        plt.show()
+
+
+
 
 
 
