@@ -71,6 +71,7 @@ class NeuralNetwork():
             # print(W.shape, A_prev.shape)
             # print("Layer: ", layer_num)
             Z = np.dot(W, A_prev) + b
+            # print(W.shape, A_prev.shape)
             # print(Z.shape)
             if self.activations[layer_num] == 'sigmoid':
                 A = self.sigmoid(Z)
@@ -90,7 +91,7 @@ class NeuralNetwork():
         return y_hat
 
 
-    def cross_entropy_loss(self, params, iter):
+    def loss_func(self, params, iter):
         '''
         Function to implement cross entropy loss
         > y_hat:
@@ -102,12 +103,15 @@ class NeuralNetwork():
         y_hat = self.forward_prop(self.X, params)
         # print(self.y.shape)
         if self.activations[-1] == 'softmax':
+            # Softmax Loss
             loss = np.mean(-np.sum(np.log(y_hat) * self.y))
         
         elif self.activations[-1] == 'linear':
+            # MSE loss
             loss = np.square(np.subtract(self.y,y_hat)).mean()
         
         else:
+            # Cross Entropy Loss
             loss = -1/n*(np.sum(self.y*np.log(y_hat) + (1-self.y)*np.log(1-y_hat)))
         
         
@@ -138,7 +142,7 @@ class NeuralNetwork():
         params = self.initialize_parameters()
 
 
-        training_gradient_func = grad(self.cross_entropy_loss)
+        training_gradient_func = grad(self.loss_func)
 
         # update parameters
         self.final_params = param_update(training_gradient_func, params, learning_rate=learning_rate, num_iter=num_iter)
@@ -154,6 +158,8 @@ class NeuralNetwork():
         AL = self.forward_prop(X, self.final_params)
         # print(AL[:,2],AL[:,4])
         if self.activations[-1] == 'softmax':
+            
+            # print(AL.shape-)
             y_hat = AL.argmax(axis=0)
             y = np.argmax(y, axis=0)
 
