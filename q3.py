@@ -1,9 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_digits
+from sklearn.metrics import plot_confusion_matrix
+from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import KFold
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
+import seaborn as sns
 from LogisticRegresssion.logistic_regression import MultiClassRegressor
 
 
@@ -38,7 +41,18 @@ print("X_test shape:", X_test.shape)
 print("y_test shape:", y_test.shape)
 
 
+# Multi-Class Regressor
 mcr = MultiClassRegressor()
 mcr.fit(X_train, y_train, verbose=True, plot_loss=True)
 
-mcr.predict(X_test, y_test)
+y_hat, y_test = mcr.predict(X_test, y_test)
+
+# Plot Confusion Matrix
+fig = plt.figure(figsize=(10,8))
+cf_matrix = confusion_matrix(y_test, y_hat)
+sns.heatmap(cf_matrix, annot=True)
+plt.show()
+fig.savefig('confusionmatrix.png')
+
+
+
