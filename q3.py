@@ -5,7 +5,10 @@ from sklearn.metrics import plot_confusion_matrix
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import KFold
 import pandas as pd
+from matplotlib import cm
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.decomposition import PCA
+
 import seaborn as sns
 from LogisticRegresssion.logistic_regression import MultiClassRegressor
 
@@ -54,5 +57,28 @@ sns.heatmap(cf_matrix, annot=True)
 plt.show()
 fig.savefig('confusionmatrix.png')
 
+# PCA
+X,y = load_digits(return_X_y=True) 
+pca = PCA(n_components=2)
 
+principal_comp = pca.fit_transform(X)
 
+pca_df = pd.DataFrame(data=principal_comp, columns=['pc1', 'pc2'])
+df = pd.concat((pca_df, pd.DataFrame(y)), axis=1)
+# print(df.columns)
+# print(df.head(20))
+
+fig = plt.figure(figsize=(10,8))
+targets = range(0,10,1)
+# targets = list(map(str,targets))
+colors = ['#ff6600', '#ff9999', '#ffff99', '#ff99ff', '#66ffff', '#9900cc', '#66ff66', '#800000', '#cc6699', '#9999ff']
+
+for t, c in zip(targets, colors):
+    idx = df[0] == t
+    plt.scatter(df.loc[idx, 'pc1'], df.loc[idx, 'pc2'], c=c, s=50)
+
+plt.legend(targets)
+plt.grid()
+plt.title("PCA Plot")
+plt.show()
+fig.savefig('pcaplot.png')
