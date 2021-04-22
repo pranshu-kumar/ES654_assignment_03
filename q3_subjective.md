@@ -1,7 +1,7 @@
 # ES654: Machine Learning | Assignment 03
 ### Pranshu Kumar Gond (18110124)
-## Question 03
 ---
+## Question 03
 
 ### c) Overall Accuracy and Confusion Matrix
 The decrease in the loss function is presented in the given graph, 
