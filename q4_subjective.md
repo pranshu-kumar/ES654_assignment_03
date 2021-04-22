@@ -17,7 +17,7 @@ Let,
 The time complexity for training a Logistic Regression Model is ***O((m+1)cne)***
  
 #### b) Prediction
-The time complexity for predicting a set of samples is ***O((m+1)cs)***
+The time complexity for predicting a set of samples is ***O((m+1)cn)***
 
 ### 2. Space Complexity of Logestic Regression
 
