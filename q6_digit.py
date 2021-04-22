@@ -4,9 +4,8 @@ from sklearn.datasets import load_digits
 from sklearn.model_selection import KFold
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
-
-
 from NeuralNetwork.neural_net import NeuralNetwork
+
 # Load data
 data = load_digits()
 
@@ -32,10 +31,9 @@ for train_index, test_index in kf.split(X):
     X_train,X_test = X[train_index], X[test_index]
     y_train, y_test = y[train_index], y[test_index]
 
+
 X_train = X_train.T
 X_test = X_test.T
-# y_train = np.reshape(y_train, (1, y_train.shape[0]))
-# y_test = np.reshape(y_test, (1, y_test.shape[0]))
 
 # One Hot Encoding
 enc = OneHotEncoder(sparse=False, categories='auto')
@@ -47,9 +45,10 @@ print("y_train shape:", y_train.shape)
 print("X_test shape:", X_test.shape)
 print("y_test shape:", y_test.shape)
 
-# print(pd.DataFrame(X_train).head())
+
 # Defining Neural Network
-nn = NeuralNetwork(layer_info=[64, 20, 10], activations=['sigmoid', 'sigmoid', 'softmax'])
+nn = NeuralNetwork(layer_info=[64, 20, 10], activations=['sigmoid', 'relu', 'softmax'])
 nn.train_model(X=X_train, y=y_train,verbose=True, plot_loss=True, num_iter=5000)
 
+# Predict
 nn.predict(X=X_test, y=y_test)
