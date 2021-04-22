@@ -21,6 +21,7 @@ Train test dataset created using 3 Fold Cross Validation.
 The decrease in the loss function is presented in the graph below,
 
 Test accuracy: **0.92654**
+
 ![](nn_digit_error.png)
 
 ### Neural Network on Boston Housing Prices Dataset (Regression)
@@ -39,6 +40,7 @@ Train test dataset created using 3 Fold Cross Validation.
 The decrease in the loss function is presented in the graph below,
 
 RMSE: **78.9236**
+
 ![](nn_boston_loss.png)
 
 
