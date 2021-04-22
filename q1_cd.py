@@ -9,14 +9,13 @@ import copy
 
 # Load Dataset
 X,y = load_breast_cancer(return_X_y=True)
-# X = X.astype(np.float128)
-temp_X = copy.deepcopy(X)
-# print(temp_X)
+
 # Normalization
 x_mean = X.mean()
 x_std = X.std()
 X = (X-x_mean)/x_std
 # print(temp_X)
+
 # K-Fold, K=3
 kf = KFold(n_splits=3)
 kf.get_n_splits(X)
@@ -34,7 +33,7 @@ print("y_test shape:", y_test.shape)
 print("Logistic Regression on Breast Cancer Model ->")
 
 lr = LogisticRegressor(X=X_train, y=y_train)
-_, parameters = lr.train_model(num_iter=10000,learning_rate=0.001, verbose=False, plot_loss=False)
+_, parameters = lr.train_model(num_iter=10000,learning_rate=0.001, verbose=True, plot_loss=True)
 
 # Predict
 y_hat = lr.predict(parameters,X_test, y_test)
@@ -42,6 +41,9 @@ y_hat = lr.predict(parameters,X_test, y_test)
 
 # Plotting decision boundary
 print("\nPlotting Decision Boundary!")
+
+fig = plt.figure(figsize=(8,8))
+
 plot_X = X[:,3:5]
 data = load_breast_cancer()
 feature_names = [data.feature_names[3], data.feature_names[4]]
@@ -81,3 +83,4 @@ plt.xlabel(feature_names[0])
 plt.ylabel(feature_names[1])
 plt.title("Decision Boundary")
 plt.show()
+fig.savefig("decbound.png")

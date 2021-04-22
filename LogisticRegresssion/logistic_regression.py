@@ -176,12 +176,15 @@ class LogisticRegressor():
         '''
         Function to plot loss
         '''
+        fig = plt.figure(figsize=(8,8))
         plt.plot(np.squeeze(loss_list))
         plt.grid()
         plt.xlabel("Number of iterations (10 steps interval)")
         plt.ylabel("Loss")
         plt.title("Loss vs Number of iterations\nLearning Rate: {}".format(learning_rate))
         plt.show()
+
+        fig.savefig("lr_error.png")
 
 
 class MultiClassRegressor():
@@ -275,6 +278,7 @@ class MultiClassRegressor():
         print("Accuracy:", acc)
         # print(y_hat.shape, y.shape)
         # print(y_hat)
+        return y_hat, y
         
     
     def plot_loss(self, learning_rate):
