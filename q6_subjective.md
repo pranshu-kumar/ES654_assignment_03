@@ -38,7 +38,7 @@ Train test dataset created using 3 Fold Cross Validation.
 
 The decrease in the loss function is presented in the graph below,
 
-RMSE: **77.2540**
+RMSE: **78.9236**
 ![](nn_boston_loss.png)
 
 

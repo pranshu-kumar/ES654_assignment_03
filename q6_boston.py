@@ -75,7 +75,7 @@ y_hat = y_hat.reshape((y_hat.shape[1],))
 y_test = y_test.reshape((y_test.shape[1],))
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20,8))
-fig.suptitle('Horizontally stacked subplots')
+fig.suptitle('Predictions - Boston Housing Prices Dataset')
 
 ax1.scatter(unscaled_X_test[0,:], y_hat, color='g',label="Prediction")
 ax1.scatter(unscaled_X_test[0,:], y_test, alpha=0.7, label="Test Data")
