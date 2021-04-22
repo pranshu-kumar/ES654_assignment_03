@@ -52,8 +52,7 @@ class NeuralNetwork():
         '''
         Function to calculate the ReLU of Z
         '''
-        zero = np.zeros((Z.shape))
-        return np.maximum(zero,Z)
+        return np.maximum(0,Z)
 
     def softmax(self, Z):
         return np.exp(Z)/np.sum(np.exp(Z), axis=1,keepdims=True)
@@ -85,6 +84,8 @@ class NeuralNetwork():
             y_hat = self.relu(Z)
         elif self.activations[-1] == 'softmax':
             y_hat = self.softmax(Z)
+        elif self.activations[-1] == 'linear':
+            y_hat = Z
 
         return y_hat
 
@@ -159,14 +160,14 @@ class NeuralNetwork():
             # # print(y)
         
         else:
-            y_hat = np.zeros((1, X.shape[1]))
-            for i in range(AL.shape[1]):
-                if AL[0,i] > 0.5:
-                    y_hat[0,i] = 1
-                else:
-                    y_hat[0,i] = 0
-
-            acc = accuracy(y_hat, y)
+            y_hat = AL
+            # for i in range(AL.shape[1]):
+            #     if AL[0,i] > 0.5:
+            #         y_hat[0,i] = 1
+            #     else:
+            #         y_hat[0,i] = 0
+            # print(AL.shape)
+            # acc = (abs(y_hat - y)).mean()
 
         if y is None:
             return y_hat
