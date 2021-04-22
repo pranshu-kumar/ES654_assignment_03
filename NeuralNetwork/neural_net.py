@@ -103,6 +103,10 @@ class NeuralNetwork():
         # print(self.y.shape)
         if self.activations[-1] == 'softmax':
             loss = np.mean(-np.sum(np.log(y_hat) * self.y))
+        
+        elif self.activations[-1] == 'linear':
+            loss = np.square(np.subtract(self.y,y_hat)).mean()
+        
         else:
             loss = -1/n*(np.sum(self.y*np.log(y_hat) + (1-self.y)*np.log(1-y_hat)))
         
@@ -160,14 +164,24 @@ class NeuralNetwork():
             # # print(y)
         
         else:
-            y_hat = AL
-            # for i in range(AL.shape[1]):
-            #     if AL[0,i] > 0.5:
-            #         y_hat[0,i] = 1
-            #     else:
-            #         y_hat[0,i] = 0
-            # print(AL.shape)
-            # acc = (abs(y_hat - y)).mean()
+            # Classification Problem
+            # print(np.unique(y))
+            if len(np.unique(y)) == self.layer_info[-1] or len(np.unique(y)) == 2:
+                y_hat = np.zeros((1, AL.shape[1]))
+                for i in range(AL.shape[1]):
+                    if AL[0,i] > 0.5:
+                        y_hat[0,i] = 1
+                    else:
+                        y_hat[0,i] = 0
+                # print(AL.shape)
+                acc = (abs(y_hat - y)).mean()
+
+                return y_hat
+            
+            # Regression Problem
+            else:
+                y_hat = AL
+                return y_hat
 
         if y is None:
             return y_hat
