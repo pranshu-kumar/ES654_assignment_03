@@ -282,12 +282,14 @@ class MultiClassRegressor():
         
     
     def plot_loss(self, learning_rate):
+        fig = plt.figure(figsize=(8,8))
         plt.plot(np.squeeze(self.loss_list))
         plt.grid()
         plt.xlabel("Number of iterations")
         plt.ylabel("Loss")
         plt.title("Loss vs Number of iterations\nLearning Rate: {}".format(learning_rate))
         plt.show()
+        fig.savefig("mcr_loss.png")
 
 
 

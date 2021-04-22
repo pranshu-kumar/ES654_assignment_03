@@ -22,7 +22,7 @@ print("shape of y:", y.shape)
 X = X/64
 
 # K-Fold, K=3
-kf = KFold(n_splits=3)
+kf = KFold(n_splits=4)
 kf.get_n_splits(X)
 
 for train_index, test_index in kf.split(X):
@@ -51,11 +51,18 @@ mcr.fit(X_train, y_train, verbose=True, plot_loss=True)
 y_hat, y_test = mcr.predict(X_test, y_test)
 
 # Plot Confusion Matrix
-fig = plt.figure(figsize=(10,8))
+ax= plt.subplot()
 cf_matrix = confusion_matrix(y_test, y_hat)
-sns.heatmap(cf_matrix, annot=True)
+sns.heatmap(cf_matrix, annot=True, fmt='g', ax=ax)
+ax.set_xlabel("Predicted")
+ax.set_ylabel("True Labels")
+ax.set_title("Confusion Matrix")
 plt.show()
-fig.savefig('confusionmatrix.png')
+# plt.show()
+# plt.title('Confusion Matrix')
+# plt.xlabel("Predicted")
+# plt.ylabel("True Labels")
+# fig.savefig('confusionmatrix.png')
 
 # PCA
 X,y = load_digits(return_X_y=True) 
@@ -68,7 +75,7 @@ df = pd.concat((pca_df, pd.DataFrame(y)), axis=1)
 # print(df.columns)
 # print(df.head(20))
 
-fig = plt.figure(figsize=(10,8))
+fig = plt.figure(figsize=(8,8))
 targets = range(0,10,1)
 # targets = list(map(str,targets))
 colors = ['#ff6600', '#ff9999', '#ffff99', '#ff99ff', '#66ffff', '#9900cc', '#66ff66', '#800000', '#cc6699', '#9999ff']
@@ -80,5 +87,7 @@ for t, c in zip(targets, colors):
 plt.legend(targets)
 plt.grid()
 plt.title("PCA Plot")
+plt.xlabel("Principle Component 01")
+plt.ylabel("Principle Component 02")
 plt.show()
 fig.savefig('pcaplot.png')
