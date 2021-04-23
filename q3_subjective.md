@@ -18,7 +18,7 @@ Looking closely at the confusion matrix,
 
 The two digits that got the most confused were: digit **1** and **9**
 
-The digits that were easily predicted are: **6** and **7**
+The digits that were easily predicted are: **0**, **6** and **7**
 
 ### d) PCA Plot
 After doing PCA on the given dataset, the dimensionality of the dataset was reduced to **2**. 
@@ -26,3 +26,7 @@ After doing PCA on the given dataset, the dimensionality of the dataset was redu
 The PCA plot is given below, 
 
 ![](pcaplot.png)
+
+From the plot, we can infer the following:
+* The digits are correctly classified as different clusters. However, some clusters partially overlap. This suggests that these digits are difficult to seperate. 
+* The digit **0** is at the top seperated from all the clusters suggesting that it is easy to distinguish 0 (The confusion matrix suggests the same). The same goes for the digit **6**
