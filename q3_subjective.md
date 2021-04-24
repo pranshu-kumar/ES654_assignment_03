@@ -8,7 +8,7 @@ The decrease in the loss function is presented in the given graph,
 
 ![](mcr_loss.png)
 
-The overall accuracy of the model came out to be: **0.83305**
+The overall accuracy of the model came out to be: **0.8777**
 
 The Confusion Matrix is given below,
 
