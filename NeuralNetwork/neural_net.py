@@ -182,12 +182,19 @@ class NeuralNetwork():
                 # print(AL.shape)
                 acc = (abs(y_hat - y)).mean()
 
-                return y_hat
+                return y_hat, acc
             
             # Regression Problem
             else:
                 y_hat = AL
-                return y_hat
+                sq_sum = 0
+                for i in range(y_hat.shape[1]):
+                    sq_sum += (y[0,i] - y_hat[0,i])**2
+                    # print(y[0,i], y_hat[0,i])
+                rmse = sq_sum/y_hat.shape[1]
+
+                print("RMSE: ", rmse)
+                return y_hat, rmse
 
         if y is None:
             return y_hat
@@ -196,7 +203,7 @@ class NeuralNetwork():
 
         print("Test Accuracy:", acc)
 
-        return y_hat
+        return y_hat, acc
 
     def plot_loss(self,loss_list, learning_rate):
         '''

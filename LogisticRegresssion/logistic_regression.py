@@ -15,6 +15,7 @@ class LogisticRegressor():
         self.regularization = regularization
         if self.regularization == 'l1' or self.regularization == 'l2' :
             self.lambd = lambd
+            print(self.lambd)
         # self.X = self.X.astype(np.float128)
 
         self.y = np.reshape(y,(self.X.shape[0],1))
@@ -42,11 +43,13 @@ class LogisticRegressor():
         
         # L2 Regularization
         elif self.regularization == 'l2':
-            reg = (self.lambd/(2*n)) * (W.T @ W) 
+            reg = (self.lambd/(2*n)) * (W@ W.T) 
+            reg = reg[0][0]
+            # print(reg)
 
         # L1 Regularization    
         elif self.regularization == 'l1':
-            reg = (self.lambd/(2*n)) * abs(W)
+            reg = (self.lambd/(2*n)) * np.linalg.norm(W)
         
         loss += reg
         return loss
@@ -55,6 +58,8 @@ class LogisticRegressor():
 
         dw = (1/n) * (np.dot(self.X.T, (A-self.y.T).T))
         db = (1/n) * (np.sum(A-self.y.T))
+
+        # print(dw.shape, W.shape)
         
         # Unregularized
         if self.regularization == 'unreg':
@@ -62,11 +67,15 @@ class LogisticRegressor():
 
         # L2 Regularization
         elif self.regularization == 'l2':
-            dw += (self.lambd/n) * W
+            dw += (self.lambd/n) * W.T
+            # print("l2")
 
         # L1 Regularization
         elif self.regularization == 'l1':
-            dw += (self.lambd/n) * W
+            if np.linalg.norm(W) > 0:
+                dw += (self.lambd/n)
+            elif np.linalg.norm(W) < 0:
+                dw -= (self.lambd/n)
 
         return dw, db
 
@@ -168,7 +177,7 @@ class LogisticRegressor():
 
         print("Test Accuracy:", acc)
 
-        return y_hat
+        return y_hat, acc
 
 
     # Plot loss

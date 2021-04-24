@@ -12,6 +12,7 @@ def accuracy(y_hat, y):
     '''
     Function to print accuracy
     '''
+    # print(y.shape, y_hat.shape)
     assert(y_hat.shape == y.shape)
 
     count = 0
