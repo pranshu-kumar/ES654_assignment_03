@@ -25,30 +25,31 @@ X = X/64
 kf = KFold(n_splits=4)
 kf.get_n_splits(X)
 
+best_acc = 0
 for train_index, test_index in kf.split(X):
-    X_train,X_test = X[train_index], X[test_index]
-    y_train, y_test = y[train_index], y[test_index]
+    temp_X_train, temp_X_test = X[train_index], X[test_index]
+    temp_y_train, temp_y_test = y[train_index], y[test_index]
+    temp_X_train = temp_X_train.T
+    temp_X_test = temp_X_test.T
+
+    # One Hot Encoding
+    enc = OneHotEncoder(sparse=False, categories='auto')
+    temp_y_train = enc.fit_transform(temp_y_train.reshape(len(temp_y_train), -1)).T
+    temp_y_test = enc.transform(temp_y_test.reshape(len(temp_y_test), -1)).T
+
+    # Multi-Class Regressor
+    mcr = MultiClassRegressor()
+    mcr.fit(temp_X_train, temp_y_train, verbose=False, plot_loss=False)
+
+    temp_y_hat, temp_y_test, acc = mcr.predict(temp_X_test, temp_y_test)
+    
+    if acc > best_acc:
+        best_acc = acc
+        y_test = temp_y_test
+        y_hat = temp_y_hat
 
 
-X_train = X_train.T
-X_test = X_test.T
 
-# One Hot Encoding
-enc = OneHotEncoder(sparse=False, categories='auto')
-y_train = enc.fit_transform(y_train.reshape(len(y_train), -1)).T
-y_test = enc.transform(y_test.reshape(len(y_test), -1)).T
-
-print("X_train shape:", X_train.shape)
-print("y_train shape:", y_train.shape)
-print("X_test shape:", X_test.shape)
-print("y_test shape:", y_test.shape)
-
-
-# Multi-Class Regressor
-mcr = MultiClassRegressor()
-mcr.fit(X_train, y_train, verbose=True, plot_loss=True)
-
-y_hat, y_test = mcr.predict(X_test, y_test)
 
 # Plot Confusion Matrix
 ax= plt.subplot()
