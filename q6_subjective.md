@@ -20,7 +20,7 @@ Train test dataset created using 3 Fold Cross Validation.
 
 The decrease in the loss function is presented in the graph below,
 
-Test accuracy: **0.92654**
+Test accuracy: **0.953255**
 
 ![](nn_digit_error.png)
 
@@ -39,7 +39,7 @@ Train test dataset created using 3 Fold Cross Validation.
 
 The decrease in the loss function is presented in the graph below,
 
-RMSE: **78.9236**
+RMSE: **21.5800**
 
 ![](nn_boston_loss.png)
 

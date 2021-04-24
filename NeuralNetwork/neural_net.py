@@ -181,7 +181,7 @@ class NeuralNetwork():
                         y_hat[0,i] = 0
                 # print(AL.shape)
                 acc = (abs(y_hat - y)).mean()
-
+                print("Accuracy:", acc)
                 return y_hat, acc
             
             # Regression Problem
